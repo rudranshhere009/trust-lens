@@ -2,6 +2,41 @@
 
 TrustLens is a cyber-focused investigation platform for forensic file review, deep fact-check research, and AI-assisted analysis. It unifies document/image evidence workflows, source verification pipelines, and desk-specific operations (Legal, Compliance, TruthDesk) with actionable runbooks, file-context chat, and defensible verdict support.
 
+## At a Glance
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| 🧪 Fact Check Engine | ✅ Live | URL/Image/Document intake with deep research flow |
+| 🧰 Forensic Workspace | ✅ Live | Evidence preview, metadata, integrity, forensic controls |
+| 🤖 AI Assistant | ✅ Live | GPT-style chat + `From Files` context selection |
+| 🌐 Deployment | ✅ Live | Frontend + backend deployed on Vercel |
+| 🔐 Security | ⚠️ Configure | Set `GROQ_API_KEY` in backend env vars |
+
+## Visual Flow
+
+```mermaid
+flowchart LR
+  A[User Intake] --> B[Frontend React/Vite]
+  B --> C[FactCheck API Client]
+  C --> D[FastAPI + LangGraph]
+  D --> E[Search/Browse/Critic/Synthesizer]
+  E --> F[Verdict + Sources + Recommendations]
+  F --> B
+  B --> G[AI Assistant Chat]
+  G --> H[/api/factcheck/chat]
+```
+
+```mermaid
+flowchart TD
+  C1[Claim Input] --> C2[Decomposer]
+  C2 --> C3[Planner]
+  C3 --> C4[Searcher]
+  C4 --> C5[Browser Chain]
+  C5 --> C6[Critic]
+  C6 --> C7[Synthesizer]
+  C7 --> C8[True / Mostly True / Mixed / Mostly False / False / Unverifiable]
+```
+
 ## Highlights
 - Deep fact-check pipeline for URL, image, and document inputs
 - Forensic document/media workspace with metadata and risk signals
@@ -173,10 +208,24 @@ Use the local URL printed by Vite (commonly `http://localhost:8080` in this proj
 - Inspect trust/risk metadata
 - Use outputs as context for assistant and fact-check workflows
 
+| Documents Capability | What It Helps With |
+| --- | --- |
+| 📄 PDF/Image preview | Quick evidence triage and readability |
+| 🧬 Metadata fingerprint | Identify producer/editor anomalies |
+| 🔎 IOC/PII extraction | Spot risky indicators early |
+| 🧾 Integrity hashes | Preserve traceable verification record |
+
 ### 2) Fact Check
 - Choose URL/image/document intake
 - Run deep investigation
 - Review coverage, analysis, and recommendations
+
+| Fact Check Output | Description |
+| --- | --- |
+| 📰 Output 1 | News + source coverage with gathered links |
+| ❓ Output 2 | Q&A on gathered sources (true/false/explain) |
+| 🔁 Output 3 | Related incident recommendations |
+| 🧵 Timeline | Research steps and pipeline progress events |
 
 ### 3) AI Assistant (`From Files` flow)
 - Open AI Assistant
