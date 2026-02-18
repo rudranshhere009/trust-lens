@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "builds": [{ "src": "factcheck_graph/app.py", "use": "@vercel/python" }],
+  "routes": [{ "src": "/(.*)", "dest": "factcheck_graph/app.py" }]
+}
