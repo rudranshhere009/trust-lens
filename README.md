@@ -23,7 +23,7 @@ flowchart LR
   E --> F[Verdict + Sources + Recommendations]
   F --> B
   B --> G[AI Assistant Chat]
-  G --> H[/api/factcheck/chat]
+  G --> H["/api/factcheck/chat"]
 ```
 
 ```mermaid
