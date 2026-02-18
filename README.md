@@ -105,11 +105,25 @@ docs/screenshots/infantry.png
 Example markdown usage:
 
 ```md
-![Dashboard](docs/screenshots/dashboard.png)
-![Documents](docs/screenshots/documents.png)
-![Fact Check](docs/screenshots/fact-check.png)
-![AI Assistant](docs/screenshots/assistant.png)
-![Infantry](docs/screenshots/infantry.png)
+### Dashboard
+![Dashboard 1](docs/screenshots/dashboard-1.png)
+![Dashboard 2](docs/screenshots/dashboard-2.png)
+
+### Documents
+![Documents 1](docs/screenshots/documents-1.png)
+![Documents 2](docs/screenshots/documents-2.png)
+
+### Fact Check
+![Fact Check 1](docs/screenshots/fact-check-1.png)
+![Fact Check 2](docs/screenshots/fact-check-2.png)
+
+### AI Assistant
+![Assistant 1](docs/screenshots/assistant-1.png)
+![Assistant 2](docs/screenshots/assistant-2.png)
+
+### Infantry
+![Infantry 1](docs/screenshots/infantry-1.png)
+![Infantry 2](docs/screenshots/infantry-2.png)
 ```
 
 ## Setup
