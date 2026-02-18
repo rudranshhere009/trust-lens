@@ -85,46 +85,25 @@ TRUST-LENS-main/
 ```
 
 ## Screenshots
-
-Store screenshots inside:
-
-```text
-docs/screenshots/
-```
-
-Recommended files:
-
-```text
-docs/screenshots/dashboard.png
-docs/screenshots/documents.png
-docs/screenshots/fact-check.png
-docs/screenshots/assistant.png
-docs/screenshots/infantry.png
-```
-
-Example markdown usage:
-
-```md
 ### Dashboard
-![Dashboard 1](docs/screenshots/dashboard-1.png)
-![Dashboard 2](docs/screenshots/dashboard-2.png)
+![Dashboard 1](docs/dashboard-1.png)
+![Dashboard 2](docs/dashboard-2.png)
 
 ### Documents
-![Documents 1](docs/screenshots/documents-1.png)
-![Documents 2](docs/screenshots/documents-2.png)
+![Documents 1](docs/documents-1.png)
+![Documents 2](docs/documents-2.png)
 
 ### Fact Check
-![Fact Check 1](docs/screenshots/fact-check-1.png)
-![Fact Check 2](docs/screenshots/fact-check-2.png)
+![Fact Check 1](docs/fact-check-1.png)
+![Fact Check 2](docs/fact-check-2.png)
 
 ### AI Assistant
-![Assistant 1](docs/screenshots/assistant-1.png)
-![Assistant 2](docs/screenshots/assistant-2.png)
+![Assistant 1](docs/assistant-1.png)
+![Assistant 2](docs/assistant-2.png)
 
 ### Infantry
-![Infantry 1](docs/screenshots/infantry-1.png)
-![Infantry 2](docs/screenshots/infantry-2.png)
-```
+![Infantry 1](docs/infantry-1.png)
+![Infantry 2](docs/infantry-2.png)
 
 ## Setup
 
@@ -319,22 +298,4 @@ Start frontend in another terminal:
 
 ```bash
 npm run dev
-```
-
-Optional folders to create for docs and assets:
-
-```text
-docs/
-  screenshots/
-  architecture/
-```
-
-Suggested files:
-
-```text
-docs/architecture/frontend-flow.md
-docs/architecture/backend-flow.md
-docs/screenshots/dashboard.png
-docs/screenshots/fact-check.png
-docs/screenshots/assistant.png
 ```
