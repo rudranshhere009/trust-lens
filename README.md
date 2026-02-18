@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TrustLens
 
 TrustLens is a cyber-focused investigation workspace for:
@@ -344,3 +345,7 @@ Backend already includes localhost origins for Vite usage. Ensure frontend point
 ---
 
 If you need deployment docs (Docker/systemd/Windows service setup), add a `docs/deployment.md` and wire environment profiles per stage.
+=======
+# trust-lens
+TrustLens is a cyber-focused investigation platform for forensic file review, deep fact-check research, and AI-assisted analysis. It unifies document/image evidence workflows, source verification pipelines, and desk-specific operations (Legal, Compliance, Truth Desk with actionable runbooks, file-context chat, and defensible verdict support.
+>>>>>>> 4bd823a6140f5520d76d2882b60fa06355ef7422
