@@ -1,7 +1,6 @@
 import MatrixBackground from '../components/MatrixBackground';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import VisualBubbles from '@/components/VisualBubbles';
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -10,7 +9,6 @@ const WelcomePage = () => {
     <div className="relative h-[100dvh] w-screen overflow-hidden font-space-grotesk">
       <MatrixBackground />
       <div className="welcome-ambient pointer-events-none absolute inset-0 z-0" />
-      <VisualBubbles />
 
       <header className="absolute left-0 top-0 z-30 px-3 py-3 md:px-5 md:py-4">
         <div className="flex items-center space-x-3">
@@ -22,8 +20,8 @@ const WelcomePage = () => {
       </header>
 
       <main className="relative z-20 flex h-full items-center justify-center px-4 pb-6 pt-16 md:px-8 md:pt-20">
-        <div data-bubble-obstacle className="relative z-10 mx-auto w-full max-w-lg rounded-xl border border-green-500/50 bg-black/20 px-4 py-4 shadow-2xl shadow-green-500/20 backdrop-blur-xl sm:px-5 sm:py-5 md:px-6 md:py-6">
-          <h1 className="title-shaky mx-auto max-w-[500px] text-center text-[28px] font-extrabold leading-[1.08] tracking-tight text-green-400 text-shadow-neon md:text-[46px]">
+        <div className="hacker-panel relative z-10 mx-auto w-full max-w-lg rounded-xl border border-green-500/50 px-4 py-4 backdrop-blur-xl sm:px-5 sm:py-5 md:px-6 md:py-6">
+          <h1 className="hacker-title welcome-title mx-auto max-w-[500px] text-center text-[28px] font-extrabold leading-[1.08] tracking-tight text-green-400 text-shadow-neon md:text-[46px]">
             <span className="block">Uncover Truth</span>
             <span className="block">Navigate Justice</span>
           </h1>
