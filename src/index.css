@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -100,6 +101,20 @@
 }
 
 @layer components {
+  .hacker-panel {
+    background: linear-gradient(155deg, rgba(2, 12, 8, 0.9) 0%, rgba(2, 20, 13, 0.82) 52%, rgba(2, 12, 8, 0.92) 100%);
+    box-shadow:
+      0 0 0 1px rgba(74, 222, 128, 0.28),
+      0 24px 70px rgba(0, 0, 0, 0.55),
+      inset 0 0 28px rgba(34, 197, 94, 0.12);
+  }
+
+  .hacker-title {
+    text-shadow:
+      0 0 8px rgba(52, 211, 153, 0.55),
+      0 0 24px rgba(16, 185, 129, 0.3);
+  }
+
   .dashboard-card-effect {
     transition: all 0.3s ease-in-out;
     box-shadow: 0 4px 6px -1px hsla(var(--foreground), 0.1), 0 2px 4px -2px hsla(var(--foreground), 0.1); /* Subtle initial shadow */
@@ -120,6 +135,12 @@
 }
 
 @layer utilities {
+  .brand-fun-font {
+    font-family: 'Roboto', 'Space Grotesk', sans-serif;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+  }
+
   @keyframes neon-shade-shift {
     0% { background-position: 0% 0%; }
     100% { background-position: 100% 100%; }
@@ -247,9 +268,10 @@
 
   .welcome-ambient {
     background:
-      radial-gradient(44% 40% at 22% 18%, rgba(22, 245, 90, 0.16), transparent 70%),
-      radial-gradient(38% 36% at 78% 80%, rgba(16, 185, 129, 0.14), transparent 72%),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+      radial-gradient(44% 40% at 22% 18%, rgba(22, 245, 90, 0.14), transparent 70%),
+      radial-gradient(38% 36% at 78% 80%, rgba(16, 185, 129, 0.12), transparent 72%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.14) 0%, rgba(0, 0, 0, 0.3) 100%);
+    filter: blur(1.6px);
     animation: ambient-drift 12s ease-in-out infinite;
   }
 

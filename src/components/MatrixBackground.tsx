@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-type BlockColumn = {
+type Tile = {
+  x: number;
   y: number;
-  speed: number;
-  length: number;
-  tokens: string[];
+  phase: number;
+  pulse: number;
+  flicker: number;
 };
 
 const MatrixBackground: React.FC = () => {
@@ -14,182 +15,146 @@ const MatrixBackground: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    let frameId = 0;
-    let lastFrame = 0;
+    let raf = 0;
+    let last = 0;
     let tick = 0;
 
-    const targetFps = 30;
-    const frameDuration = 1000 / targetFps;
+    let w = 0;
+    let h = 0;
+    let tiles: Tile[] = [];
 
-    const colGap = 30;
-    const blockW = 24;
-    const blockH = 16;
-    const stepY = 18;
+    const cell = 26;
+    const gap = 4;
+    const step = cell + gap;
 
-    const tokenPool = [
-      '01', '10', 'FF', 'A9', '7C', 'E3', 'TX', 'RX', 'OK', 'ID', 'AI', 'VR',
-      'LK', 'UN', 'SC', 'TR', 'PK', 'NM', '42', '88', '0F', 'B1'
-    ];
-
-    let columns: BlockColumn[] = [];
-
-    const random = (min: number, max: number) => min + Math.random() * (max - min);
-    const randomToken = () => tokenPool[Math.floor(Math.random() * tokenPool.length)];
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    const createColumn = (): BlockColumn => {
-      const length = Math.floor(random(8, 16));
-      return {
-        y: random(-canvas.height, 0),
-        speed: random(1.0, 2.8),
-        length,
-        tokens: Array.from({ length }, () => randomToken()),
-      };
-    };
+    const init = () => {
+      tiles = [];
+      const cols = Math.ceil(w / step) + 1;
+      const rows = Math.ceil(h / step) + 1;
 
-    const initColumns = () => {
-      const count = Math.ceil(canvas.width / colGap);
-      columns = Array.from({ length: count }, () => createColumn());
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          tiles.push({
+            x: c * step,
+            y: r * step,
+            phase: rand(0, Math.PI * 2),
+            pulse: rand(0.2, 1),
+            flicker: rand(0, 1),
+          });
+        }
+      }
     };
 
     const drawBackdrop = () => {
-      const w = canvas.width;
-      const h = canvas.height;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.11)';
       ctx.fillRect(0, 0, w, h);
 
-      const diagonal = ctx.createLinearGradient(0, 0, w, h);
-      diagonal.addColorStop(0, 'rgba(24, 96, 74, 0.06)');
-      diagonal.addColorStop(0.5, 'rgba(10, 40, 30, 0.02)');
-      diagonal.addColorStop(1, 'rgba(24, 96, 74, 0.05)');
-      ctx.fillStyle = diagonal;
-      ctx.fillRect(0, 0, w, h);
-    };
-
-    const drawColumns = () => {
-      ctx.font = '700 11px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      for (let i = 0; i < columns.length; i++) {
-        const col = columns[i];
-        const x = i * colGap + 3;
-
-        for (let j = 0; j < col.length; j++) {
-          const y = col.y - j * stepY;
-          if (y < -20 || y > canvas.height + 20) continue;
-
-          const trail = 1 - j / col.length;
-          const isHead = j === 0;
-
-          const blockAlpha = isHead ? 0.9 : 0.12 + 0.34 * trail;
-          const borderAlpha = isHead ? 0.85 : 0.16 + 0.28 * trail;
-          const textAlpha = isHead ? 0.98 : 0.22 + 0.52 * trail;
-
-          ctx.fillStyle = `rgba(22, 126, 92, ${blockAlpha.toFixed(3)})`;
-          ctx.fillRect(x, y, blockW, blockH);
-
-          ctx.strokeStyle = `rgba(86, 218, 166, ${borderAlpha.toFixed(3)})`;
-          ctx.lineWidth = 1;
-          ctx.strokeRect(x + 0.5, y + 0.5, blockW - 1, blockH - 1);
-
-          ctx.fillStyle = `rgba(186, 255, 226, ${textAlpha.toFixed(3)})`;
-          ctx.fillText(col.tokens[j], x + blockW * 0.5, y + blockH * 0.52);
-        }
-
-        col.y += col.speed;
-
-        if (Math.random() > 0.9) {
-          col.tokens[Math.floor(random(0, col.length))] = randomToken();
-        }
-
-        if (col.y - col.length * stepY > canvas.height + 40) {
-          columns[i] = createColumn();
-        }
-      }
-    };
-
-    const drawDataLines = () => {
-      const h = canvas.height;
-      const w = canvas.width;
-
-      for (let i = 0; i < 5; i++) {
-        const y = ((tick * (1.1 + i * 0.15)) + i * 110) % (h + 80) - 40;
-        const xShift = (tick * (2 + i)) % 240;
-
-        ctx.strokeStyle = 'rgba(70, 182, 142, 0.10)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(-xShift, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-    };
-
-    const drawPulseBand = () => {
-      const y = (tick * 2.2) % (canvas.height + 220) - 110;
-      const g = ctx.createLinearGradient(0, y - 55, 0, y + 55);
-      g.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      g.addColorStop(0.5, 'rgba(82, 214, 164, 0.10)');
-      g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      const g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, 'rgba(10, 28, 22, 0.14)');
+      g.addColorStop(0.5, 'rgba(5, 14, 11, 0.1)');
+      g.addColorStop(1, 'rgba(10, 28, 22, 0.14)');
       ctx.fillStyle = g;
-      ctx.fillRect(0, y - 55, canvas.width, 110);
+      ctx.fillRect(0, 0, w, h);
     };
 
-    const drawNoise = () => {
-      for (let i = 0; i < 70; i++) {
-        if (Math.random() > 0.75) {
-          const x = Math.floor(random(0, canvas.width));
-          const y = Math.floor(random(0, canvas.height));
-          ctx.fillStyle = 'rgba(120, 230, 184, 0.07)';
-          ctx.fillRect(x, y, 1, 1);
+    const drawTiles = (dt: number) => {
+      const waveX = (tick * 40) % (w + h);
+
+      for (let i = 0; i < tiles.length; i++) {
+        const t = tiles[i];
+
+        const d = Math.abs((t.x + t.y) - waveX);
+        const waveBoost = Math.max(0, 1 - d / 220);
+
+        t.flicker += dt * 0.016;
+        if (t.flicker > 1 && Math.random() > 0.9) {
+          t.flicker = 0;
+          t.pulse = rand(0.2, 1);
         }
+
+        const base = 0.05 + 0.12 * (0.5 + 0.5 * Math.sin(tick * 0.03 + t.phase));
+        const alpha = Math.min(0.5, base + waveBoost * 0.2 + t.pulse * 0.03);
+
+        ctx.fillStyle = `rgba(72, 204, 162, ${alpha.toFixed(3)})`;
+        ctx.fillRect(t.x, t.y, cell, cell);
+
+        ctx.strokeStyle = `rgba(132, 242, 204, ${(alpha * 0.7).toFixed(3)})`;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(t.x + 0.5, t.y + 0.5, cell - 1, cell - 1);
+
+        const innerA = alpha * 0.35;
+        ctx.fillStyle = `rgba(170, 255, 226, ${innerA.toFixed(3)})`;
+        ctx.fillRect(t.x + 6, t.y + 6, 6, 6);
       }
+    };
+
+    const drawWaveFront = () => {
+      const p = (tick * 2.2) % (w + h + 220) - 110;
+      ctx.strokeStyle = 'rgba(110, 236, 194, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p - h, h);
+      ctx.lineTo(p, 0);
+      ctx.stroke();
+
+      const glow = ctx.createLinearGradient(p - 60, h, p + 60, 0);
+      glow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      glow.addColorStop(0.5, 'rgba(106, 232, 192, 0.12)');
+      glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(p - h - 80, 0, 160, h);
     };
 
     const drawCrt = () => {
-      ctx.fillStyle = 'rgba(58, 168, 128, 0.022)';
-      for (let y = 0; y < canvas.height; y += 4) {
-        ctx.fillRect(0, y, canvas.width, 1);
+      ctx.fillStyle = 'rgba(58, 168, 130, 0.016)';
+      for (let y = 0; y < h; y += 4) {
+        ctx.fillRect(0, y, w, 1);
       }
     };
 
-    const draw = () => {
-      tick += 1;
+    const draw = (dt: number) => {
+      tick += dt;
       drawBackdrop();
-      drawDataLines();
-      drawColumns();
-      drawPulseBand();
-      drawNoise();
+      drawTiles(dt);
+      drawWaveFront();
       drawCrt();
     };
 
-    const animate = (timestamp: number) => {
-      if (timestamp - lastFrame >= frameDuration) {
-        draw();
-        lastFrame = timestamp;
-      }
-      frameId = requestAnimationFrame(animate);
+    const loop = (ts: number) => {
+      if (!last) last = ts;
+      const dt = Math.min(2, (ts - last) / 16.67);
+      last = ts;
+      draw(dt);
+      raf = requestAnimationFrame(loop);
     };
 
     const onResize = () => {
       resize();
-      initColumns();
+      init();
     };
 
     window.addEventListener('resize', onResize);
     onResize();
-    frameId = requestAnimationFrame(animate);
+    raf = requestAnimationFrame(loop);
 
     return () => {
-      cancelAnimationFrame(frameId);
+      cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
     };
   }, []);
@@ -199,12 +164,13 @@ const MatrixBackground: React.FC = () => {
       ref={canvasRef}
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
+        inset: 0,
         width: '100%',
         height: '100%',
         zIndex: 1,
-        backgroundColor: '#000',
+        opacity: 0.64,
+        filter: 'blur(1.2px)',
+        backgroundColor: 'transparent',
         pointerEvents: 'none',
       }}
     />

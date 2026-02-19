@@ -6,20 +6,11 @@ const WelcomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-[100dvh] w-screen overflow-hidden font-space-grotesk">
+    <div className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-auto font-space-grotesk">
       <MatrixBackground />
       <div className="welcome-ambient pointer-events-none absolute inset-0 z-0" />
 
-      <header className="absolute left-0 top-0 z-30 px-3 py-3 md:px-5 md:py-4">
-        <div className="flex items-center space-x-3">
-          <img src="/favicon.ico" alt="TrustLens Logo" className="h-8 w-8 animate-slide-in-left animate-delay-200" />
-          <span className="text-2xl font-bold tracking-wider text-green-400 animate-slide-in-left animate-delay-300">
-            TrustLens
-          </span>
-        </div>
-      </header>
-
-      <main className="relative z-20 flex h-full items-center justify-center px-4 pb-6 pt-16 md:px-8 md:pt-20">
+      <main className="relative z-20 flex min-h-[100dvh] w-full items-center justify-center px-3 pb-6 pt-16 sm:px-4 md:px-8 md:pt-20">
         <div className="hacker-panel relative z-10 mx-auto w-full max-w-lg rounded-xl border border-green-500/50 px-4 py-4 backdrop-blur-xl sm:px-5 sm:py-5 md:px-6 md:py-6">
           <h1 className="hacker-title welcome-title mx-auto max-w-[500px] text-center text-[28px] font-extrabold leading-[1.08] tracking-tight text-green-400 text-shadow-neon md:text-[46px]">
             <span className="block">Uncover Truth</span>
