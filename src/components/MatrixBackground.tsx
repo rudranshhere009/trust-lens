@@ -1,11 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
-type Stream = {
+type BlockColumn = {
   y: number;
   speed: number;
   length: number;
-  chars: string[];
-  glitch: boolean;
+  tokens: string[];
 };
 
 const MatrixBackground: React.FC = () => {
@@ -25,129 +24,138 @@ const MatrixBackground: React.FC = () => {
     const targetFps = 30;
     const frameDuration = 1000 / targetFps;
 
-    const fontSize = 18;
-    const lineStep = 19;
-    const columnGap = 21;
+    const colGap = 30;
+    const blockW = 24;
+    const blockH = 16;
+    const stepY = 18;
 
-    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&*+-=<>[]{}';
-    const jpGlyphs = '!?:;~^/\\|()_.,`\'"';
+    const tokenPool = [
+      '01', '10', 'FF', 'A9', '7C', 'E3', 'TX', 'RX', 'OK', 'ID', 'AI', 'VR',
+      'LK', 'UN', 'SC', 'TR', 'PK', 'NM', '42', '88', '0F', 'B1'
+    ];
 
-    let streams: Stream[] = [];
+    let columns: BlockColumn[] = [];
 
     const random = (min: number, max: number) => min + Math.random() * (max - min);
-    const randomChar = () => {
-      const bank = Math.random() > 0.65 ? jpGlyphs : glyphs;
-      return bank.charAt(Math.floor(Math.random() * bank.length));
-    };
+    const randomToken = () => tokenPool[Math.floor(Math.random() * tokenPool.length)];
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
-    const createStream = (): Stream => {
-      const length = Math.floor(random(10, 22));
+    const createColumn = (): BlockColumn => {
+      const length = Math.floor(random(8, 16));
       return {
         y: random(-canvas.height, 0),
-        speed: random(1.3, 3.5),
+        speed: random(1.0, 2.8),
         length,
-        chars: Array.from({ length }, () => randomChar()),
-        glitch: Math.random() > 0.88,
+        tokens: Array.from({ length }, () => randomToken()),
       };
     };
 
-    const initStreams = () => {
-      const count = Math.ceil(canvas.width / columnGap);
-      streams = Array.from({ length: count }, () => createStream());
+    const initColumns = () => {
+      const count = Math.ceil(canvas.width / colGap);
+      columns = Array.from({ length: count }, () => createColumn());
     };
 
     const drawBackdrop = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.23)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.24)';
+      ctx.fillRect(0, 0, w, h);
 
-      // Low-intensity phosphor haze.
-      const haze = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      haze.addColorStop(0, 'rgba(24, 120, 84, 0.05)');
-      haze.addColorStop(0.5, 'rgba(20, 95, 72, 0.02)');
-      haze.addColorStop(1, 'rgba(12, 60, 50, 0.04)');
-      ctx.fillStyle = haze;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const diagonal = ctx.createLinearGradient(0, 0, w, h);
+      diagonal.addColorStop(0, 'rgba(24, 96, 74, 0.06)');
+      diagonal.addColorStop(0.5, 'rgba(10, 40, 30, 0.02)');
+      diagonal.addColorStop(1, 'rgba(24, 96, 74, 0.05)');
+      ctx.fillStyle = diagonal;
+      ctx.fillRect(0, 0, w, h);
     };
 
-    const drawStreams = () => {
-      ctx.font = `700 ${fontSize}px monospace`;
+    const drawColumns = () => {
+      ctx.font = '700 11px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
-      for (let i = 0; i < streams.length; i++) {
-        const s = streams[i];
-        const baseX = i * columnGap + 3;
+      for (let i = 0; i < columns.length; i++) {
+        const col = columns[i];
+        const x = i * colGap + 3;
 
-        for (let j = 0; j < s.length; j++) {
-          const y = s.y - j * lineStep;
-          if (y < -lineStep || y > canvas.height + lineStep) continue;
+        for (let j = 0; j < col.length; j++) {
+          const y = col.y - j * stepY;
+          if (y < -20 || y > canvas.height + 20) continue;
 
-          const t = 1 - j / s.length;
+          const trail = 1 - j / col.length;
+          const isHead = j === 0;
 
-          if (j === 0) {
-            ctx.fillStyle = 'rgba(190, 248, 222, 0.9)';
-          } else if (j < 3) {
-            ctx.fillStyle = `rgba(104, 222, 170, ${(0.62 * t).toFixed(3)})`;
-          } else {
-            ctx.fillStyle = `rgba(42, 170, 120, ${(0.44 * t).toFixed(3)})`;
-          }
+          const blockAlpha = isHead ? 0.9 : 0.12 + 0.34 * trail;
+          const borderAlpha = isHead ? 0.85 : 0.16 + 0.28 * trail;
+          const textAlpha = isHead ? 0.98 : 0.22 + 0.52 * trail;
 
-          // Selected streams have a subtle horizontal glitch wobble.
-          const wobble = s.glitch ? Math.sin((tick + i * 13 + j * 7) * 0.08) * 2.8 : 0;
-          ctx.fillText(s.chars[j], baseX + wobble, y);
+          ctx.fillStyle = `rgba(22, 126, 92, ${blockAlpha.toFixed(3)})`;
+          ctx.fillRect(x, y, blockW, blockH);
+
+          ctx.strokeStyle = `rgba(86, 218, 166, ${borderAlpha.toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 0.5, y + 0.5, blockW - 1, blockH - 1);
+
+          ctx.fillStyle = `rgba(186, 255, 226, ${textAlpha.toFixed(3)})`;
+          ctx.fillText(col.tokens[j], x + blockW * 0.5, y + blockH * 0.52);
         }
 
-        s.y += s.speed;
+        col.y += col.speed;
 
-        if (Math.random() > 0.88) {
-          s.chars[Math.floor(random(0, s.length))] = randomChar();
+        if (Math.random() > 0.9) {
+          col.tokens[Math.floor(random(0, col.length))] = randomToken();
         }
 
-        if (Math.random() > 0.996) {
-          s.glitch = !s.glitch;
-        }
-
-        if (s.y - s.length * lineStep > canvas.height + 60) {
-          streams[i] = createStream();
+        if (col.y - col.length * stepY > canvas.height + 40) {
+          columns[i] = createColumn();
         }
       }
     };
 
-    const drawVortexRings = () => {
-      const cx = canvas.width * 0.5;
-      const cy = canvas.height * 0.5;
+    const drawDataLines = () => {
+      const h = canvas.height;
+      const w = canvas.width;
 
-      for (let i = 0; i < 4; i++) {
-        const radius = 90 + ((tick * 1.8 + i * 140) % 520);
-        const alpha = Math.max(0.02, 0.16 - radius / 4200);
+      for (let i = 0; i < 5; i++) {
+        const y = ((tick * (1.1 + i * 0.15)) + i * 110) % (h + 80) - 40;
+        const xShift = (tick * (2 + i)) % 240;
 
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate((tick * 0.002 + i * 0.8) % (Math.PI * 2));
-        ctx.strokeStyle = `rgba(86, 210, 166, ${alpha.toFixed(3)})`;
-        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = 'rgba(70, 182, 142, 0.10)';
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.ellipse(0, 0, radius, radius * 0.42, 0, 0, Math.PI * 2);
+        ctx.moveTo(-xShift, y);
+        ctx.lineTo(w, y);
         ctx.stroke();
-        ctx.restore();
       }
     };
 
-    const drawScanBand = () => {
-      const y = (tick * 2.25) % (canvas.height + 200) - 100;
-      const scan = ctx.createLinearGradient(0, y - 45, 0, y + 45);
-      scan.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      scan.addColorStop(0.5, 'rgba(88, 210, 166, 0.09)');
-      scan.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = scan;
-      ctx.fillRect(0, y - 45, canvas.width, 90);
+    const drawPulseBand = () => {
+      const y = (tick * 2.2) % (canvas.height + 220) - 110;
+      const g = ctx.createLinearGradient(0, y - 55, 0, y + 55);
+      g.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      g.addColorStop(0.5, 'rgba(82, 214, 164, 0.10)');
+      g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, y - 55, canvas.width, 110);
+    };
+
+    const drawNoise = () => {
+      for (let i = 0; i < 70; i++) {
+        if (Math.random() > 0.75) {
+          const x = Math.floor(random(0, canvas.width));
+          const y = Math.floor(random(0, canvas.height));
+          ctx.fillStyle = 'rgba(120, 230, 184, 0.07)';
+          ctx.fillRect(x, y, 1, 1);
+        }
+      }
     };
 
     const drawCrt = () => {
-      ctx.fillStyle = 'rgba(62, 172, 132, 0.022)';
+      ctx.fillStyle = 'rgba(58, 168, 128, 0.022)';
       for (let y = 0; y < canvas.height; y += 4) {
         ctx.fillRect(0, y, canvas.width, 1);
       }
@@ -156,9 +164,10 @@ const MatrixBackground: React.FC = () => {
     const draw = () => {
       tick += 1;
       drawBackdrop();
-      drawStreams();
-      drawVortexRings();
-      drawScanBand();
+      drawDataLines();
+      drawColumns();
+      drawPulseBand();
+      drawNoise();
       drawCrt();
     };
 
@@ -172,7 +181,7 @@ const MatrixBackground: React.FC = () => {
 
     const onResize = () => {
       resize();
-      initStreams();
+      initColumns();
     };
 
     window.addEventListener('resize', onResize);
