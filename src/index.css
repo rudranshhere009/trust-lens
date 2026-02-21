@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -135,12 +134,6 @@
 }
 
 @layer utilities {
-  .brand-fun-font {
-    font-family: 'Roboto', 'Space Grotesk', sans-serif;
-    letter-spacing: 0.03em;
-    font-weight: 700;
-  }
-
   @keyframes neon-shade-shift {
     0% { background-position: 0% 0%; }
     100% { background-position: 100% 100%; }
@@ -174,24 +167,6 @@
   @keyframes animate-pulse-slow {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
-  }
-
-  @keyframes ambient-drift {
-    0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
-    50% { transform: translate3d(-2%, -1.5%, 0) scale(1.05); opacity: 0.72; }
-    100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
-  }
-
-  @keyframes ambient-scan {
-    0% { transform: translateY(-15%); opacity: 0.14; }
-    50% { opacity: 0.26; }
-    100% { transform: translateY(15%); opacity: 0.14; }
-  }
-
-  @keyframes ambient-orbit {
-    0% { transform: rotate(0deg) scale(1); }
-    50% { transform: rotate(180deg) scale(1.06); }
-    100% { transform: rotate(360deg) scale(1); }
   }
 
   @keyframes title-shake {
@@ -271,37 +246,7 @@
       radial-gradient(44% 40% at 22% 18%, rgba(22, 245, 90, 0.14), transparent 70%),
       radial-gradient(38% 36% at 78% 80%, rgba(16, 185, 129, 0.12), transparent 72%),
       linear-gradient(180deg, rgba(0, 0, 0, 0.14) 0%, rgba(0, 0, 0, 0.3) 100%);
-    filter: blur(1.6px);
-    animation: ambient-drift 12s ease-in-out infinite;
-  }
-
-  .welcome-ambient::before {
-    content: '';
-    position: absolute;
-    inset: -28%;
-    background:
-      radial-gradient(circle at 32% 34%, rgba(34, 197, 94, 0.16) 0%, rgba(34, 197, 94, 0) 42%),
-      radial-gradient(circle at 68% 66%, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0) 38%),
-      radial-gradient(circle at 58% 22%, rgba(74, 222, 128, 0.12) 0%, rgba(74, 222, 128, 0) 34%);
-    filter: blur(18px);
-    transform-origin: center;
-    animation: ambient-orbit 24s linear infinite;
-  }
-
-  .welcome-ambient::after {
-    content: '';
-    position: absolute;
-    inset: -20%;
-    background:
-      repeating-linear-gradient(
-        to bottom,
-        rgba(52, 211, 153, 0.08) 0px,
-        rgba(52, 211, 153, 0.08) 1px,
-        transparent 1px,
-        transparent 18px
-      );
-    mix-blend-mode: screen;
-    animation: ambient-scan 9s ease-in-out infinite alternate;
+    opacity: 0.85;
   }
 
   .legal-icon-float {
@@ -350,59 +295,6 @@
   .title-shaky {
     animation: title-shake 0.55s steps(2, end) infinite;
     will-change: transform;
-  }
-
-  @keyframes welcome-card-float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-
-  @keyframes welcome-card-glow {
-    0%, 100% {
-      box-shadow:
-        0 0 0 1px rgba(16, 185, 129, 0.18),
-        0 20px 60px rgba(16, 185, 129, 0.15),
-        inset 0 0 30px rgba(16, 185, 129, 0.06);
-    }
-    50% {
-      box-shadow:
-        0 0 0 1px rgba(52, 211, 153, 0.35),
-        0 26px 72px rgba(16, 185, 129, 0.24),
-        inset 0 0 40px rgba(16, 185, 129, 0.12);
-    }
-  }
-
-  @keyframes welcome-title-shimmer {
-    0% { text-shadow: 0 0 10px rgba(52, 211, 153, 0.38), 0 0 28px rgba(16, 185, 129, 0.22); }
-    50% { text-shadow: 0 0 14px rgba(52, 211, 153, 0.62), 0 0 40px rgba(16, 185, 129, 0.33); }
-    100% { text-shadow: 0 0 10px rgba(52, 211, 153, 0.38), 0 0 28px rgba(16, 185, 129, 0.22); }
-  }
-
-  @keyframes welcome-button-pulse {
-    0%, 100% { box-shadow: 0 8px 26px rgba(34, 197, 94, 0.36); transform: translateY(0); }
-    50% { box-shadow: 0 12px 34px rgba(34, 197, 94, 0.52); transform: translateY(-1px); }
-  }
-
-  .welcome-card {
-    background: linear-gradient(140deg, rgba(0, 8, 5, 0.9) 0%, rgba(0, 18, 10, 0.72) 50%, rgba(0, 8, 5, 0.9) 100%);
-    backdrop-filter: blur(14px);
-    animation: welcome-card-float 7s ease-in-out infinite, welcome-card-glow 5s ease-in-out infinite;
-  }
-
-  .welcome-title {
-    animation: welcome-title-shimmer 3.5s ease-in-out infinite;
-  }
-
-  .welcome-copy {
-    text-wrap: balance;
-  }
-
-  .welcome-quote {
-    text-wrap: balance;
-  }
-
-  .welcome-button {
-    animation: welcome-button-pulse 2.8s ease-in-out infinite;
   }
 
   .dark body::after {

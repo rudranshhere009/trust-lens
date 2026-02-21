@@ -31,7 +31,7 @@ const LoginPage = () => {
       {/* Centered Content - Login Form */}
       <main className="relative z-20 flex w-full flex-col items-center justify-center p-3 text-center text-white sm:p-4">
         <div className="hacker-panel relative z-10 mx-auto w-full max-w-md rounded-xl border border-green-500/50 p-6 backdrop-blur-xl animate-scale-in animate-delay-300 sm:p-8">
-          <h1 className="hacker-title welcome-title text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-shadow-neon text-green-400 mb-6">
+          <h1 className="hacker-title text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-shadow-neon text-green-400 mb-6">
             Welcome Back
           </h1>
           {errorMessage && (
